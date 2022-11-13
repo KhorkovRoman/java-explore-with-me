@@ -20,3 +20,4 @@ CREATE TABLE IF NOT EXISTS locations (
                                          CONSTRAINT pk_location PRIMARY KEY (location_id)
 );
 
+

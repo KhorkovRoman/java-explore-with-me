@@ -34,6 +34,10 @@ public class Event {
     private Long participantLimit;
     private Boolean paid;
     private Boolean requestModeration;
+    private Long confirmedRequests;
+    private LocalDateTime createdOn;
+    private LocalDateTime publishedOn;
+    private Long views;
     @ManyToOne
     @JoinColumn(name = "location_id")
     private Location location;
@@ -42,7 +46,7 @@ public class Event {
     private Category category;
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User user;
+    private User initiator;
     @Enumerated(EnumType.STRING)
     private EventStatus status;
 }

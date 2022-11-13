@@ -1,5 +1,6 @@
 package ru.practicum.explorewithme.events.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,10 +24,13 @@ public class NewEventDto {
     @NotBlank(groups = {Create.class})
     private String description;
     @NotNull(groups = {Create.class})
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime eventDate;
     @NotNull(groups = {Create.class})
     private Location location;
     @NotNull(groups = {Create.class})
     private Long category;
-
+    private Long participantLimit;
+    private Boolean paid;
+    private Boolean requestModeration;
 }
