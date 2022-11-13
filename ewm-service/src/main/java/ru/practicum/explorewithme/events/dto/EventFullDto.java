@@ -7,7 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.practicum.explorewithme.categories.dto.CategoryDto;
 import ru.practicum.explorewithme.common.Create;
-import ru.practicum.explorewithme.events.model.Location;
+import ru.practicum.explorewithme.events.model.LocationModel;
 import ru.practicum.explorewithme.users.model.User;
 
 import javax.validation.constraints.NotBlank;
@@ -29,9 +29,9 @@ public class EventFullDto {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime eventDate;
     @NotNull(groups = {Create.class})
-    private Location location;
+    private LocationModel location;
     @NotNull(groups = {Create.class})
-    private CategoryDto categoryDto;
+    private CategoryDto category;
     private Long participantLimit;
     @NotNull(groups = {Create.class})
     private Boolean paid;

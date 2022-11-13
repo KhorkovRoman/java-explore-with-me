@@ -35,8 +35,9 @@ public class UserServiceImpl implements UserService {
         User user = UserMapper.toUser(newUserRequest);
         validationUser.validateUserEmail(user);
         validateUserByEmail(user);
-        log.info("Пользователь с id " + user.getId() + " успешно создан.");
-        return userRepository.save(user);
+        User userFromDataBase = userRepository.save(user);
+        log.info("Пользователь с id " + userFromDataBase.getId() + " успешно создан.");
+        return userFromDataBase;
     }
 
     @Override

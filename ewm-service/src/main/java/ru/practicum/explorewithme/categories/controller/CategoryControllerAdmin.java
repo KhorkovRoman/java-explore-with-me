@@ -2,7 +2,6 @@ package ru.practicum.explorewithme.categories.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.explorewithme.categories.dto.CategoryDto;
 import ru.practicum.explorewithme.categories.dto.NewCategoryDto;
@@ -23,29 +22,25 @@ public class CategoryControllerAdmin {
 
     @PostMapping
     public CategoryDto createCategory(@RequestBody NewCategoryDto newCategoryDto) {
-        log.info("Получен запрос к эндпоинту POST/admin/categories");
+        log.info("Has received request to endpoint POST/admin/categories");
         return CategoryMapper.toCategoryDto(categoryService.createCategory(newCategoryDto));
     }
 
     @PatchMapping
     public CategoryDto updateCategory(@RequestBody CategoryDto categoryDto) {
-        log.info("Получен запрос к эндпоинту PATCH/admin/categories");
+        log.info("Has received request to endpoint PATCH/admin/categories");
         return CategoryMapper.toCategoryDto(categoryService.updateCategory(categoryDto));
     }
 
     @GetMapping("/{catId}")
-    public CategoryDto getUserById(@PathVariable Long catId) {
+    public CategoryDto getCategoryById(@PathVariable Long catId) {
+        log.info("Has received request to endpoint GET/admin/categories/{}", catId);
         return CategoryMapper.toCategoryDto(categoryService.getCategoryById(catId));
     }
 
     @DeleteMapping("/{catId}")
     public void deleteCategory(@PathVariable Long catId) {
+        log.info("Has received request to endpoint DELETE/admin/categories/{}", catId);
         categoryService.deleteCategory(catId);
     }
-
-    public PageRequest findPageRequest(Integer from, Integer size) {
-        int page = from / size;
-        return PageRequest.of(page, size);
-    }
-
 }

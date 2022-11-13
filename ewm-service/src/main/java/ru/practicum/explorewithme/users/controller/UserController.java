@@ -28,23 +28,26 @@ public class UserController {
     public Collection<UserDto> getAllUsers(@RequestParam(required = false) List<Long> ids,
                                            @RequestParam(defaultValue = "0") Integer from,
                                            @RequestParam(defaultValue = "10") Integer size) {
-        log.info("Получен Get запрос к эндпоинту GET/admin/users?ids={}from={}size={}", ids, from, size);
+        log.info("Has received request to endpoint GET/admin/users?ids={}from={}size={}", ids, from, size);
         final PageRequest pageRequest = findPageRequest(from, size);
         return UserMapper.toUserDtoCollection(userService.getAllUsers(ids, pageRequest));
     }
 
     @GetMapping("/{userId}")
     public UserDto getUserById(@PathVariable Long userId) {
+        log.info("Has received request to endpoint GET/admin/users/{}", userId);
         return UserMapper.toUserDto(userService.getUserById(userId));
     }
 
     @PostMapping
     public UserDto createUser(@RequestBody NewUserRequest newUserRequest) {
+        log.info("Has received request to endpoint POST/admin/users");
         return UserMapper.toUserDto(userService.createUser(newUserRequest));
     }
 
     @DeleteMapping("/{userId}")
     public void deleteUser(@PathVariable Long userId) {
+        log.info("Has received request to endpoint DELETE/admin/users/{}", userId);
         userService.deleteUser(userId);
     }
 

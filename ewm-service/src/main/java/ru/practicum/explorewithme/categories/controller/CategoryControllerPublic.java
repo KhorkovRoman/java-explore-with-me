@@ -25,14 +25,14 @@ public class CategoryControllerPublic {
     @GetMapping
     public Collection<CategoryDto> getAllCategories(@RequestParam(defaultValue = "0") Integer from,
                                                     @RequestParam(defaultValue = "10") Integer size) {
-        log.info("Получен Get запрос к эндпоинту GET/categories?from={}size={}", from, size);
+        log.info("Has received request to endpoint GET/categories?from={}size={}", from, size);
         final PageRequest pageRequest = findPageRequest(from, size);
         return CategoryMapper.toCategoryDtoCollection(categoryService.getAllCategories(pageRequest));
     }
 
     @GetMapping("/{catId}")
-    public CategoryDto getUserById(@PathVariable Long catId) {
-        log.info("Получен Get запрос к эндпоинту GET/categories/{}", catId);
+    public CategoryDto getCategoryById(@PathVariable Long catId) {
+        log.info("Has received request to endpoint GET/categories/{}", catId);
         return CategoryMapper.toCategoryDto(categoryService.getCategoryById(catId));
     }
 

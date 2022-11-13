@@ -30,23 +30,29 @@ public class Event {
     private String description;
     @Column(name = "eventDate", nullable = false)
     private LocalDateTime eventDate;
-    @Column(name = "participantLimit")
+    @Column(name = "participant_limit")
     private Long participantLimit;
+    @Column(name = "paid")
     private Boolean paid;
+    @Column(name = "request_moderation")
     private Boolean requestModeration;
+    @Column(name = "confirmed_requests")
     private Long confirmedRequests;
+    @Column(name = "createdOn")
     private LocalDateTime createdOn;
+    @Column(name = "publishedOn")
     private LocalDateTime publishedOn;
+    @Column(name = "views")
     private Long views;
     @ManyToOne
     @JoinColumn(name = "location_id")
-    private Location location;
+    private LocationModel location;
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "initiator_id")
     private User initiator;
     @Enumerated(EnumType.STRING)
-    private EventStatus status;
+    private EventStatus state;
 }

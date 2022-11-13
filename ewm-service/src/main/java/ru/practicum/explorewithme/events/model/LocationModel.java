@@ -14,13 +14,13 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "locations")
-public class Location {
+public class LocationModel {
     @Id
     @Column(name = "location_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name = "latitude", nullable = false)
+    @Column(name = "lat", nullable = false)
     private Float lat;
-    @Column(name = "longitude", nullable = false)
+    @Column(name = "lon", nullable = false)
     private Float lon;
 }
