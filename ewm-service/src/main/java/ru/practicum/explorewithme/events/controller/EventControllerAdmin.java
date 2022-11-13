@@ -21,16 +21,16 @@ public class EventControllerAdmin {
     public EventControllerAdmin(EventService eventService) {
         this.eventService = eventService;
     }
+
     @PatchMapping("/{eventId}/publish")
-    public EventFullDto publishEvent( @PathVariable Long eventId) {
+    public EventFullDto publishEvent(@PathVariable Long eventId) {
         log.info("Has received request to endpoint PATCH/admin/events/{}/publish", eventId);
         return EventMapper.toEventFullDto(eventService.publishEvent(eventId));
     }
 
     @PatchMapping("/{eventId}/reject")
-    public EventFullDto rejectEvent( @PathVariable Long eventId) {
+    public EventFullDto rejectEvent(@PathVariable Long eventId) {
         log.info("Has received request to endpoint PATCH/admin/events/{}/reject", eventId);
         return EventMapper.toEventFullDto(eventService.rejectEvent(eventId));
     }
-
 }

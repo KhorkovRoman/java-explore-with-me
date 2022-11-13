@@ -26,7 +26,7 @@ public class NewEventDto {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime eventDate;
     @NotNull(groups = {Create.class})
-    private Location Location;
+    private Location location;
     @NotNull(groups = {Create.class})
     private Long category;
     private Long participantLimit;

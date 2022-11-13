@@ -17,7 +17,7 @@ public class EventMapper {
 
     private static CategoryService categoryService;
 
-    public static List<EventShortDto> toEventShortDtoCollection(Collection<Event> eventCollection ) {
+    public static List<EventShortDto> toEventShortDtoCollection(Collection<Event> eventCollection) {
         return eventCollection.stream()
                 .map(EventMapper::toEventShotDto)
                 .collect(Collectors.toList());
