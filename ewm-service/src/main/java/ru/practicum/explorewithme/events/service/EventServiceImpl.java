@@ -14,7 +14,7 @@ import java.util.Collection;
 
 @Slf4j
 @Service
-public class EventServiceImpl implements EventService{
+public class EventServiceImpl implements EventService {
 
     private final EventRepository eventRepository;
     private final CategoryRepository categoryRepository;

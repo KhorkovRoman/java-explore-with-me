@@ -70,7 +70,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Collection<User> getAllUsers(@NotNull List<Long> ids, PageRequest pageRequest) {
-        if(ids.isEmpty()) {
+        if (ids.isEmpty()) {
             return userRepository.getAllUsersByPage(pageRequest).stream()
                     .collect(Collectors.toList());
         } else {

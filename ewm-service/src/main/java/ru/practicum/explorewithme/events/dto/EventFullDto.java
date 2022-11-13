@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 import ru.practicum.explorewithme.categories.dto.CategoryDto;
 import ru.practicum.explorewithme.common.Create;
 import ru.practicum.explorewithme.events.model.Location;
-import ru.practicum.explorewithme.events.model.State;
 import ru.practicum.explorewithme.users.model.User;
 
 import javax.validation.constraints.NotBlank;
