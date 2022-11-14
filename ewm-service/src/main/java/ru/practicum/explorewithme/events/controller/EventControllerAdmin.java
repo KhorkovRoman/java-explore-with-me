@@ -15,15 +15,18 @@ import ru.practicum.explorewithme.events.service.EventService;
 @RequestMapping(path = "/admin/events")
 public class EventControllerAdmin {
     private final EventService eventService;
+
     @Autowired
     public EventControllerAdmin(EventService eventService) {
         this.eventService = eventService;
     }
+
     @PatchMapping("/{eventId}/publish")
     public EventFullDto publishEvent(@PathVariable Long eventId) {
         log.info("Has received request to endpoint PATCH/admin/events/{}/publish", eventId);
         return EventMapper.toEventFullDto(eventService.publishEvent(eventId));
     }
+
     @PatchMapping("/{eventId}/reject")
     public EventFullDto rejectEvent(@PathVariable Long eventId) {
         log.info("Has received request to endpoint PATCH/admin/events/{}/reject", eventId);
