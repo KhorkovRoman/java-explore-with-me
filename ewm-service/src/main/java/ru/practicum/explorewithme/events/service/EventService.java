@@ -24,6 +24,8 @@ public interface EventService {
 
     Event getEventById(Long userId, Long eventId);
 
+    Event getEventByIdPublic(Long id);
+
     void deleteEvent(Long eventId);
 
 }

@@ -151,6 +151,12 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
+    public Event getEventByIdPublic(Long id) {
+        return eventRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Не найдено событие с id " + id));
+    }
+
+    @Override
     public void deleteEvent(Long eventId) {
 
     }
