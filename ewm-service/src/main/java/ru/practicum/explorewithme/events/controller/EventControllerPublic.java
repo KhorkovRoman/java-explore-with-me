@@ -16,6 +16,7 @@ import ru.practicum.explorewithme.events.service.EventService;
 public class EventControllerPublic {
 
     private final EventService eventService;
+
     @Autowired
     public EventControllerPublic(EventService eventService) {
         this.eventService = eventService;
