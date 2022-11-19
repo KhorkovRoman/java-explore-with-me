@@ -11,7 +11,6 @@ import ru.practicum.explorewithme.users.dto.UserShortDto;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
@@ -25,7 +24,7 @@ public class EventShortDto {
     private String annotation;
     @NotNull(groups = {Create.class})
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime eventDate;
+    private String eventDate;
     @NotNull(groups = {Create.class})
     private CategoryDto category;
     private Long confirmedRequests;

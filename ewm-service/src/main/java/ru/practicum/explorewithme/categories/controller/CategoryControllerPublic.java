@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.explorewithme.categories.dto.CategoryDto;
 import ru.practicum.explorewithme.categories.mapper.CategoryMapper;
 import ru.practicum.explorewithme.categories.service.CategoryService;
+import ru.practicum.explorewithme.common.ValidationPageParam;
 
 import java.util.Collection;
 
@@ -25,6 +26,7 @@ public class CategoryControllerPublic {
     @GetMapping
     public Collection<CategoryDto> getAllCategories(@RequestParam(defaultValue = "0") Integer from,
                                                     @RequestParam(defaultValue = "10") Integer size) {
+        validatePage(from, size);
         log.info("Has received request to endpoint GET/categories?from={}size={}", from, size);
         final PageRequest pageRequest = findPageRequest(from, size);
         return CategoryMapper.toCategoryDtoCollection(categoryService.getAllCategories(pageRequest));
@@ -39,5 +41,10 @@ public class CategoryControllerPublic {
     public PageRequest findPageRequest(Integer from, Integer size) {
         int page = from / size;
         return PageRequest.of(page, size);
+    }
+
+    private void validatePage(Integer from, Integer size) {
+        ValidationPageParam validationPageParam = new ValidationPageParam(from, size);
+        validationPageParam.validatePageParam();
     }
 }

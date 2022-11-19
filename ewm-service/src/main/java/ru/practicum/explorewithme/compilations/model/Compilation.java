@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import ru.practicum.explorewithme.events.model.Event;
 
 import javax.persistence.*;
+import java.util.Collection;
 
 @Data
 @AllArgsConstructor
@@ -24,7 +25,10 @@ public class Compilation {
     private String title;
     @Column(name = "pinned", nullable = false)
     private Boolean pinned;
-    @ManyToOne
-    @JoinColumn(name = "event_id")
-    private Event event;
+    @ManyToMany
+    @JoinTable(
+        name = "compilations_events",
+        joinColumns = @JoinColumn(name = "compilation_id"),
+        inverseJoinColumns = @JoinColumn(name = "event_id"))
+    private Collection<Event> events;
 }

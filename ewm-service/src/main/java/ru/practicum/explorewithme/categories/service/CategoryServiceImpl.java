@@ -29,7 +29,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public Category createCategory(NewCategoryDto newCategoryDto) {
         Category category = categoryRepository.save(CategoryMapper.toCategory(newCategoryDto));
-        log.info("Category with id " + category.getId() + " was successfully created.");
+        log.info("Category id " + category.getId() + " has successfully created.");
         return category;
     }
 
@@ -43,7 +43,7 @@ public class CategoryServiceImpl implements CategoryService {
             category.setName(getCategoryById(category.getId()).getName());
         }
 
-        log.info("Категория с id " + category.getId() + " успешно обновлена.");
+        log.info("Category id " + category.getId() + " has successfully updated.");
         return categoryRepository.save(category);
     }
 
@@ -57,21 +57,21 @@ public class CategoryServiceImpl implements CategoryService {
     public Category getCategoryById(Long catId) {
         Category category = categoryRepository.findById(catId)
                 .orElseThrow(() -> new ValidationException(HttpStatus.NOT_FOUND,
-                        "В базе нет категории c id " + catId));
-        log.info("Категория c id " + catId + " найдена в базе.");
+                        "In DB has no category id " + catId));
+        log.info("Category id " + catId + " has found in DB.");
         return category;
     }
 
     @Override
     public void deleteCategory(Long catId) {
         validateCategory(catId);
-        log.info("Категория c id " + catId + " найдена в базе.");
+        log.info("Category id " + catId + " has found in DB.");
         categoryRepository.deleteById(catId);
     }
 
     public void validateCategory(Long catId) {
         categoryRepository.findById(catId)
                 .orElseThrow(() -> new ValidationException(HttpStatus.NOT_FOUND,
-                        "В базе нет категории c id " + catId));
+                        "In DB has no category id " + catId));
     }
 }

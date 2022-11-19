@@ -9,9 +9,9 @@ public enum EventStatus {
     PUBLISHED,
     CANCELED;
 
-    public static State findState(String stateText) {
+    public static EventStatus findState(String stateText) {
         boolean checkState = false;
-        for (State state: State.values()) {
+        for (EventStatus state: EventStatus.values()) {
             if (Objects.equals(state.toString(), stateText)) {
                 checkState = true;
                 break;
@@ -20,6 +20,6 @@ public enum EventStatus {
         if (!checkState) {
             throw new UnknownStateException("Unknown state: " + stateText);
         }
-        return State.valueOf(stateText);
+        return EventStatus.valueOf(stateText);
     }
 }

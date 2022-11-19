@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.explorewithme.common.ValidationPageParam;
 import ru.practicum.explorewithme.users.dto.UserDto;
 import ru.practicum.explorewithme.users.service.UserService;
 import ru.practicum.explorewithme.users.dto.NewUserRequest;
@@ -28,6 +29,7 @@ public class UserController {
     public Collection<UserDto> getAllUsers(@RequestParam(required = false) List<Long> ids,
                                            @RequestParam(defaultValue = "0") Integer from,
                                            @RequestParam(defaultValue = "10") Integer size) {
+        validatePage(from, size);
         log.info("Has received request to endpoint GET/admin/users?ids={}from={}size={}", ids, from, size);
         final PageRequest pageRequest = findPageRequest(from, size);
         return UserMapper.toUserDtoCollection(userService.getAllUsers(ids, pageRequest));
@@ -54,5 +56,10 @@ public class UserController {
     public PageRequest findPageRequest(Integer from, Integer size) {
         int page = from / size;
         return PageRequest.of(page, size);
+    }
+
+    private void validatePage(Integer from, Integer size) {
+        ValidationPageParam validationPageParam = new ValidationPageParam(from, size);
+        validationPageParam.validatePageParam();
     }
 }

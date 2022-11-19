@@ -1,18 +1,20 @@
 package ru.practicum.explorewithme.events.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import ru.practicum.explorewithme.categories.model.Category;
+import ru.practicum.explorewithme.compilations.model.Compilation;
 import ru.practicum.explorewithme.users.model.User;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.stream.Collectors;
 
-@Data
+@Getter
+@Setter
+@EqualsAndHashCode
+@RequiredArgsConstructor
 @AllArgsConstructor
-@NoArgsConstructor
 @Builder
 
 @Entity
@@ -44,9 +46,10 @@ public class Event {
     private LocalDateTime publishedOn;
     @Column(name = "views")
     private Long views;
-    @ManyToOne
-    @JoinColumn(name = "location_id")
-    private LocationModel location;
+    @Column(name = "lat")
+    private Float lat;
+    @Column(name = "lon")
+    private Float lon;
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
@@ -55,4 +58,34 @@ public class Event {
     private User initiator;
     @Enumerated(EnumType.STRING)
     private EventStatus state;
+    @ManyToMany(mappedBy = "events")
+    @ToString.Exclude
+    private Collection<Compilation> compilations;
+
+    @Override
+    public String toString() {
+        Collection<Long> compIdCollection = getCompilations().stream()
+                .map(Compilation::getId)
+                .collect(Collectors.toList());
+        return "Event{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", annotation='" + annotation + '\'' +
+                ", description='" + description + '\'' +
+                ", eventDate=" + eventDate +
+                ", participantLimit=" + participantLimit +
+                ", paid=" + paid +
+                ", requestModeration=" + requestModeration +
+                ", confirmedRequests=" + confirmedRequests +
+                ", createdOn=" + createdOn +
+                ", publishedOn=" + publishedOn +
+                ", views=" + views +
+                ", lat=" + lat +
+                ", lon=" + lon +
+                ", category=" + category +
+                ", initiator=" + initiator +
+                ", state=" + state +
+                ", compilations=" + compIdCollection +
+                '}';
+    }
 }

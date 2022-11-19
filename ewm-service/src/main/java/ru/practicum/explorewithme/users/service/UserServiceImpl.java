@@ -36,7 +36,7 @@ public class UserServiceImpl implements UserService {
         validationUser.validateUserEmail(user);
         validateUserByEmail(user);
         User userFromDataBase = userRepository.save(user);
-        log.info("Пользователь с id " + userFromDataBase.getId() + " успешно создан.");
+        log.info("User id " + userFromDataBase.getId() + " has successfully created.");
         return userFromDataBase;
     }
 
@@ -56,7 +56,7 @@ public class UserServiceImpl implements UserService {
             user.setName(getUserById(userId).getName());
         }
 
-        log.info("Пользователь с id " + user.getId() + " успешно обновлен.");
+        log.info("User id " + user.getId() + " has successfully updated.");
         return userRepository.save(user);
     }
 
@@ -64,8 +64,8 @@ public class UserServiceImpl implements UserService {
     public User getUserById(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ValidationException(HttpStatus.NOT_FOUND,
-                        "В базе нет пользователя c id " + userId));
-        log.info("Пользователь c id " + userId + " найден в базе.");
+                        "In DB has no user id " + userId));
+        log.info("User id " + userId + " has found in DB.");
         return user;
     }
 
@@ -82,20 +82,20 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUser(Long userId) {
         validateUser(userId);
-        log.info("Пользователь c id " + userId + " найден в базе.");
+        log.info("User id " + userId + " has found in DB.");
         userRepository.deleteById(userId);
     }
 
     public void validateUser(Long userId) {
         userRepository.findById(userId)
                 .orElseThrow(() -> new ValidationException(HttpStatus.NOT_FOUND,
-                        "В базе нет пользователя c id " + userId));
+                        "In DB has no user id " + userId));
     }
 
     public void validateUserByEmail(User user) {
         if (userRepository.findAll().contains(user.getEmail())) {
-                throw new ValidationException(HttpStatus.CONFLICT, "Пользователь c e-mail " + user.getEmail()
-                        + " уже есть в базе .");
+                throw new ValidationException(HttpStatus.CONFLICT, "User with e-mail " + user.getEmail()
+                        + " has already been in DB .");
         }
     }
 
