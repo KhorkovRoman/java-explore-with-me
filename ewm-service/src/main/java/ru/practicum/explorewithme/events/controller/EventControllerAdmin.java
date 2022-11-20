@@ -10,7 +10,6 @@ import ru.practicum.explorewithme.events.dto.EventFullDto;
 import ru.practicum.explorewithme.events.mapper.EventMapper;
 import ru.practicum.explorewithme.events.service.EventService;
 
-import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 

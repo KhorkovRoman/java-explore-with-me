@@ -4,15 +4,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import ru.practicum.explorewithme.exeption.BadRequestException;
+import ru.practicum.explorewithme.exeption.NotFoundException;
 import ru.practicum.explorewithme.users.dto.NewUserRequest;
-import ru.practicum.explorewithme.exeption.ValidationException;
 import ru.practicum.explorewithme.users.dto.UserDto;
 import ru.practicum.explorewithme.users.mapper.UserMapper;
 import ru.practicum.explorewithme.users.model.User;
 import ru.practicum.explorewithme.users.repository.UserRepository;
-import ru.practicum.explorewithme.users.validation.ValidationUser;
 
 import java.util.Collection;
 import java.util.List;
@@ -22,19 +21,16 @@ import java.util.stream.Collectors;
 @Service
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
-    private final ValidationUser validationUser;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, ValidationUser validationUser) {
+    public UserServiceImpl(UserRepository userRepository) {
         this.userRepository = userRepository;
-        this.validationUser = validationUser;
     }
 
     @Override
     public User createUser(NewUserRequest newUserRequest) {
         User user = UserMapper.toUser(newUserRequest);
-        validationUser.validateUserEmail(user);
-        validateUserByEmail(user);
+        validateUser(user);
         User userFromDataBase = userRepository.save(user);
         log.info("User id " + userFromDataBase.getId() + " has successfully created.");
         return userFromDataBase;
@@ -49,8 +45,7 @@ public class UserServiceImpl implements UserService {
         if (user.getEmail() == null) {
             user.setEmail(getUserById(userId).getEmail());
         }
-        validationUser.validateUserEmail(user);
-        validateUserByEmail(user);
+        validateUser(user);
 
         if (user.getName() == null) {
             user.setName(getUserById(userId).getName());
@@ -63,8 +58,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getUserById(Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ValidationException(HttpStatus.NOT_FOUND,
-                        "In DB has no user id " + userId));
+                .orElseThrow(() -> new NotFoundException("In DB has not found user id " + userId));
         log.info("User id " + userId + " has found in DB.");
         return user;
     }
@@ -88,15 +82,19 @@ public class UserServiceImpl implements UserService {
 
     public void validateUser(Long userId) {
         userRepository.findById(userId)
-                .orElseThrow(() -> new ValidationException(HttpStatus.NOT_FOUND,
-                        "In DB has no user id " + userId));
+                .orElseThrow(() -> new NotFoundException("In DB has not found user id " + userId));
     }
 
-    public void validateUserByEmail(User user) {
+    public void validateUser(User user) {
+        if (user.getName() == null || user.getName().isBlank()) {
+            throw new BadRequestException("Name could not be empty.");
+        }
+        if (user.getEmail() == null || user.getEmail().isBlank() || !user.getEmail().contains("@")) {
+            throw new BadRequestException("E-mail could not be empty and must to be symbol @.");
+        }
         if (userRepository.findAll().contains(user.getEmail())) {
-                throw new ValidationException(HttpStatus.CONFLICT, "User with e-mail " + user.getEmail()
-                        + " has already been in DB .");
+                throw new BadRequestException(
+                        "User with e-mail " + user.getEmail() + " has already found in DB .");
         }
     }
-
 }

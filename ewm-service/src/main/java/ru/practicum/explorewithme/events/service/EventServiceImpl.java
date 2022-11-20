@@ -4,18 +4,18 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import ru.practicum.explorewithme.categories.model.Category;
 import ru.practicum.explorewithme.categories.repository.CategoryRepository;
+import ru.practicum.explorewithme.exeption.BadRequestException;
+import ru.practicum.explorewithme.exeption.NotFoundException;
 import ru.practicum.explorewithme.events.client.EventClient;
 import ru.practicum.explorewithme.events.dto.*;
 import ru.practicum.explorewithme.events.mapper.EventMapper;
 import ru.practicum.explorewithme.events.model.Event;
 import ru.practicum.explorewithme.events.model.EventStatus;
 import ru.practicum.explorewithme.events.repository.EventRepository;
-import ru.practicum.explorewithme.exeption.ValidationException;
 import ru.practicum.explorewithme.users.model.User;
 import ru.practicum.explorewithme.users.repository.UserRepository;
 
@@ -29,9 +29,13 @@ import java.util.stream.Collectors;
 @Service
 public class EventServiceImpl implements EventService {
 
-    public static String NAME_OF_APP = "ewm-main-service";
+    public static final String NAME_OF_APP = "ewm-main-service";
 
-    public static DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    public static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+    private static final String EVENT_DATE = "EVENT_DATE";
+
+    private static final String VIEWS = "VIEWS";
 
     private final EventRepository eventRepository;
     private final CategoryRepository categoryRepository;
@@ -50,15 +54,15 @@ public class EventServiceImpl implements EventService {
     @Override
     public Event createEvent(Long userId, NewEventDto newEventDto) {
         Event event = EventMapper.toEvent(newEventDto);
-
+        validateEvent(event);
         Category category = categoryRepository.findById(newEventDto.getCategory())
-                .orElseThrow(() -> new ValidationException(HttpStatus.NOT_FOUND,
-                        "In DB has no category with id " + newEventDto.getCategory()));
+                .orElseThrow(() -> new NotFoundException(
+                        "In DB has not found category with id " + newEventDto.getCategory()));
         event.setCategory(category);
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ValidationException(HttpStatus.NOT_FOUND,
-                        "In DB has no user id " + userId));
+                .orElseThrow(() -> new NotFoundException(
+                        "In DB has not found user id " + userId));
         event.setInitiator(user);
 
         event.setLon(newEventDto.getLocation().getLon());
@@ -72,13 +76,14 @@ public class EventServiceImpl implements EventService {
     }
 
     private Event updateParamEventByUser(Event event, UpdateEventRequest updateEventRequest) {
+        validateEvent(event);
         if (updateEventRequest.getAnnotation() != null) {
             event.setAnnotation(updateEventRequest.getAnnotation());
         }
         if (updateEventRequest.getCategory() != null) {
             Category category = categoryRepository.findById(updateEventRequest.getCategory())
-                    .orElseThrow(() -> new ValidationException(HttpStatus.NOT_FOUND,
-                            "In DB has no category id " + updateEventRequest.getCategory()));
+                    .orElseThrow(() -> new NotFoundException(
+                            "In DB has not found category id " + updateEventRequest.getCategory()));
             event.setCategory(category);
         }
         if (updateEventRequest.getDescription() != null) {
@@ -102,7 +107,7 @@ public class EventServiceImpl implements EventService {
     public Event updateEvent(Long userId, UpdateEventRequest updateEventRequest) {
         Long eventId = updateEventRequest.getEventId();
         Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new RuntimeException("Has not found event with id " + eventId));
+                .orElseThrow(() -> new NotFoundException("Has not found event with id " + eventId));
         Event eventDB = eventRepository.save(updateParamEventByUser(event, updateEventRequest));
         log.info("Event id " + eventDB.getId() + " has successfully updated.");
         return eventDB;
@@ -114,8 +119,8 @@ public class EventServiceImpl implements EventService {
         }
         if (adminUpdateEventRequest.getCategory() != null) {
             Category category = categoryRepository.findById(adminUpdateEventRequest.getCategory())
-                    .orElseThrow(() -> new ValidationException(HttpStatus.NOT_FOUND,
-                            "В базе нет категории c id " + adminUpdateEventRequest.getCategory()));
+                    .orElseThrow(() -> new NotFoundException(
+                            "In DB has not found category id " + adminUpdateEventRequest.getCategory()));
             event.setCategory(category);
         }
         if (adminUpdateEventRequest.getDescription() != null) {
@@ -146,7 +151,7 @@ public class EventServiceImpl implements EventService {
     @Override
     public Event editEventByAdmin(Long eventId, AdminUpdateEventRequest adminUpdateEventRequest) {
         Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new RuntimeException("Has not found event with id " + eventId));
+                .orElseThrow(() -> new NotFoundException("Has not found event with id " + eventId));
         Event eventDB = eventRepository.save(updateParamEventByAdmin(event, adminUpdateEventRequest));
         log.info("Event id " + eventDB.getId() + " has successfully updated.");
         return eventDB;
@@ -155,7 +160,7 @@ public class EventServiceImpl implements EventService {
     @Override
     public Event cancelEvent(Long userId, Long eventId) {
         Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new RuntimeException("Has not found event with id " + eventId));
+                .orElseThrow(() -> new NotFoundException("Has not found event with id " + eventId));
         event.setState(EventStatus.CANCELED);
         Event eventDB = eventRepository.save(event);
         log.info("Event id " + eventDB.getId() + " has successfully canceled.");
@@ -165,7 +170,7 @@ public class EventServiceImpl implements EventService {
     @Override
     public Event publishEvent(Long eventId) {
         Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new RuntimeException("Has not found event id " + eventId));
+                .orElseThrow(() -> new NotFoundException("Has not found event id " + eventId));
         event.setState(EventStatus.PUBLISHED);
         Event eventDB = eventRepository.save(event);
         log.info("Event id " + eventDB.getId() + " has successfully published.");
@@ -175,7 +180,7 @@ public class EventServiceImpl implements EventService {
     @Override
     public Event rejectEvent(Long eventId) {
         Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new RuntimeException("Has not found event id " + eventId));
+                .orElseThrow(() -> new NotFoundException("Has not found event id " + eventId));
         event.setState(EventStatus.CANCELED);
         Event eventDB = eventRepository.save(event);
         log.info("Event id " + eventDB.getId() + " has successfully rejected.");
@@ -185,8 +190,8 @@ public class EventServiceImpl implements EventService {
     @Override
     public Collection<EventShortDto> getAllEventsByUser(Long userId, PageRequest pageRequest) {
         userRepository.findById(userId)
-                .orElseThrow(() -> new ValidationException(HttpStatus.NOT_FOUND,
-                        "Не найден пользователь с id " + userId));
+                .orElseThrow(() -> new NotFoundException(
+                        "In DB has not found user id " + userId));
         Collection<Event> eventCollection = eventRepository.getAllEventsByUser(userId, pageRequest).stream()
                 .collect(Collectors.toList());
 
@@ -195,7 +200,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public Collection<EventFullDto> getAllEventsByAdmin(List<Long> users, List<String> states,
-                                                        List<Long>categories,
+                                                        List<Long> categories,
                                                         String rangeStart, String rangeEnd,
                                                         PageRequest pageRequest) {
         LocalDateTime rangeStartFormatted;
@@ -212,24 +217,24 @@ public class EventServiceImpl implements EventService {
         }
 
         List<Category> categoryEntities = new ArrayList<>();
-        for(Long catId: categories) {
+        for (Long catId: categories) {
             Category category = categoryRepository.findById(catId)
-                    .orElseThrow(() -> new ValidationException(HttpStatus.NOT_FOUND,
-                            "In DB has no category with id " + catId));
+                    .orElseThrow(() -> new NotFoundException(
+                            "In DB has not found category with id " + catId));
             categoryEntities.add(category);
         }
 
         List<User> userEntities = new ArrayList<>();
-        for(Long userId: users) {
+        for (Long userId: users) {
             User user = userRepository.findById(userId)
-                    .orElseThrow(() -> new ValidationException(HttpStatus.NOT_FOUND,
-                            "In DB has no category with id " + userId));
+                    .orElseThrow(() -> new NotFoundException(
+                            "In DB has not found category with id " + userId));
             userEntities.add(user);
         }
 
         List<EventStatus> statesEnum = new ArrayList<>();
         if (states != null) {
-            for(String state: states) {
+            for (String state: states) {
                 EventStatus eventStatus = EventStatus.findState(state);
                 statesEnum.add(eventStatus);
             }
@@ -245,10 +250,11 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public Collection<EventShortDto> getAllEventsByPublic(String text, List<Long>categories, Boolean paid,
-                                                        String rangeStart, String rangeEnd,
-                                                        Boolean onlyAvailable, String sort,
-                                                        PageRequest pageRequest, HttpServletRequest request) {
+    public Collection<EventShortDto> getAllEventsByPublic(String text, List<Long> categories, Boolean paid,
+                                                          String rangeStart, String rangeEnd,
+                                                          Boolean onlyAvailable, String sort,
+                                                          PageRequest pageRequest, HttpServletRequest request) {
+
         LocalDateTime rangeStartFormatted;
         if (rangeStart.equals("")) {
             rangeStartFormatted = LocalDateTime.now();
@@ -265,30 +271,30 @@ public class EventServiceImpl implements EventService {
         List<Category> categoryEntities = new ArrayList<>();
         for (Long catId : categories) {
             Category category = categoryRepository.findById(catId)
-                    .orElseThrow(() -> new ValidationException(HttpStatus.NOT_FOUND,
-                            "In DB has no category with id " + catId));
+                    .orElseThrow(() -> new NotFoundException(
+                            "In DB has not found category with id " + catId));
             categoryEntities.add(category);
         }
 
         Page<Event> events = null;
         if (text.equals("")) {
             if (onlyAvailable.equals(true)) {
-                if (sort.equals("EVENT_DATE") || sort.equals("")) {
+                if (sort.equals(EVENT_DATE) || sort.equals("")) {
                     events = eventRepository.getAllEventsPublicByEventDateAvailableAllText(text, categoryEntities, paid,
                             rangeStartFormatted, rangeEndFormatted, pageRequest);
                 }
-                if (sort.equals("VIEWS")) {
+                if (sort.equals(VIEWS)) {
                     events = eventRepository.getAllEventsPublicByViewsAvailableAllText(text, categoryEntities, paid,
                             rangeStartFormatted, rangeEndFormatted, pageRequest);
                 }
             }
         } else {
             if (onlyAvailable.equals(true)) {
-                if (sort.equals("EVENT_DATE") || sort.equals("")) {
+                if (sort.equals(EVENT_DATE) || sort.equals("")) {
                     events = eventRepository.getAllEventsPublicByEventDateAvailable(text, categoryEntities, paid,
                             rangeStartFormatted, rangeEndFormatted, pageRequest);
                 }
-                if (sort.equals("VIEWS")) {
+                if (sort.equals(VIEWS)) {
                     events = eventRepository.getAllEventsPublicByViewsAvailable(text, categoryEntities, paid,
                             rangeStartFormatted, rangeEndFormatted, pageRequest);
                 }
@@ -296,20 +302,20 @@ public class EventServiceImpl implements EventService {
         }
 
         if (text.equals("")) {
-            if (sort.equals("EVENT_DATE") || sort.equals("")) {
+            if (sort.equals(EVENT_DATE) || sort.equals("")) {
                 events = eventRepository.getAllEventsPublicByEventDateAllText(text, categoryEntities, paid,
                         rangeStartFormatted, rangeEndFormatted, pageRequest);
             }
-            if (sort.equals("VIEWS")) {
+            if (sort.equals(VIEWS)) {
                 events = eventRepository.getAllEventsPublicByViewsAllText(text, categoryEntities, paid,
                         rangeStartFormatted, rangeEndFormatted, pageRequest);
             }
         } else {
-            if (sort.equals("EVENT_DATE") || sort.equals("")) {
+            if (sort.equals(EVENT_DATE) || sort.equals("")) {
                 events = eventRepository.getAllEventsPublicByEventDate(text, categoryEntities, paid,
                         rangeStartFormatted, rangeEndFormatted, pageRequest);
             }
-            if (sort.equals("VIEWS")) {
+            if (sort.equals(VIEWS)) {
                 events = eventRepository.getAllEventsPublicByViews(text, categoryEntities, paid,
                         rangeStartFormatted, rangeEndFormatted, pageRequest);
             }
@@ -362,14 +368,14 @@ public class EventServiceImpl implements EventService {
     @Override
     public Event getEventById(Long eventId) {
         return eventRepository.findById(eventId)
-                .orElseThrow(() -> new RuntimeException("Has not found event id " + eventId));
+                .orElseThrow(() -> new NotFoundException("Has not found event id " + eventId));
     }
 
     @Override
     public Event getEventByIdPublic(Long id, HttpServletRequest request) {
         eventClient.createEndpointHit(makeEndpointHitEwmDto(request));
         Event event = eventRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Has not found event id " + id));
+                .orElseThrow(() -> new NotFoundException("Has not found event id " + id));
 
         String uris = request.getRequestURI();
 
@@ -393,7 +399,7 @@ public class EventServiceImpl implements EventService {
             listFromObject = (ArrayList<LinkedHashMap>) responseEntities.getBody();
         }
         return listFromObject;
-     }
+    }
 
     private static EndpointHitEwmDto makeEndpointHitEwmDto(HttpServletRequest request) {
         EndpointHitEwmDto endpointHitEwmDto = new EndpointHitEwmDto();
@@ -402,5 +408,15 @@ public class EventServiceImpl implements EventService {
         endpointHitEwmDto.setIp(request.getRemoteAddr());
         endpointHitEwmDto.setTimestamp(LocalDateTime.now().format(FORMATTER));
         return endpointHitEwmDto;
+    }
+
+    public void validateEvent(Event event) {
+        if (event.getAnnotation() == null || event.getAnnotation().isBlank()) {
+            throw new BadRequestException("Annotation could not be empty.");
+        }
+        if (categoryRepository.findAll().contains(event.getAnnotation())) {
+            throw new BadRequestException(
+                    "Event " + event.getAnnotation() + " has already found in DB .");
+        }
     }
 }

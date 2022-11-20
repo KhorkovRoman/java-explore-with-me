@@ -26,12 +26,12 @@ public interface EventService {
 
     Collection<EventFullDto> getAllEventsByAdmin(List<Long> users,
                                                  List<String> states,
-                                                 List<Long>categories,
+                                                 List<Long> categories,
                                                  String rangeStart,
                                                  String rangeEnd,
                                                  PageRequest pageRequest);
 
-    Collection<EventShortDto> getAllEventsByPublic(String text, List<Long>categories, Boolean paid,
+    Collection<EventShortDto> getAllEventsByPublic(String text, List<Long> categories, Boolean paid,
                                                          String rangeStart, String rangeEnd,
                                                          Boolean onlyAvailable, String sort,
                                                          PageRequest pageRequest, HttpServletRequest request);

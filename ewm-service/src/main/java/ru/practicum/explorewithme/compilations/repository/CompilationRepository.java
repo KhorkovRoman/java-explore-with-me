@@ -12,7 +12,7 @@ public interface CompilationRepository extends JpaRepository<Compilation, Long> 
 
     @Query("select c " +
             "from Compilation c " +
-            "where (c.pinned = ?1)" +
+            "where (c.pinned = ?1) " +
             "group by c.id " +
             "order by count(distinct c.id) desc")
     Page<Compilation> getAllCompilationsByPage(Boolean pinned, PageRequest pageRequest);

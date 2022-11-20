@@ -22,8 +22,8 @@ public class RequestController {
     }
 
     @PostMapping("/{userId}/requests")
-    public ParticipantRequestDto createRequest(@PathVariable(required = true) Long userId,
-                                               @RequestParam(required = true) Long eventId) {
+    public ParticipantRequestDto createRequest(@PathVariable Long userId,
+                                               @RequestParam(required = false) Long eventId) {
         log.info("Has received request to endpoint POST/users/{}/requests?eventId={}", userId, eventId);
         return RequestMapper.toParticipantRequestDto(requestService.createRequest(userId, eventId));
     }

@@ -1,7 +1,6 @@
 package ru.practicum.explorewithme.common;
 
-import org.springframework.http.HttpStatus;
-import ru.practicum.explorewithme.exeption.ValidationException;
+import ru.practicum.explorewithme.exeption.BadRequestException;
 
 public class ValidationPageParam {
 
@@ -15,15 +14,15 @@ public class ValidationPageParam {
 
     public void validatePageParam() {
         if (from < 0) {
-            throw new ValidationException(HttpStatus.BAD_REQUEST,
+            throw new BadRequestException(
                     "Parameter 'from' cannot be < 0.");
         }
         if (size < 0) {
-            throw new ValidationException(HttpStatus.BAD_REQUEST,
+            throw new BadRequestException(
                     "Parameter 'size' cannot be < 0.");
         }
         if (from == 0 && size == 0) {
-            throw new ValidationException(HttpStatus.BAD_REQUEST,
+            throw new BadRequestException(
                     "Parameters 'from' and 'size' cannot be equal 0 at the same time");
         }
     }
