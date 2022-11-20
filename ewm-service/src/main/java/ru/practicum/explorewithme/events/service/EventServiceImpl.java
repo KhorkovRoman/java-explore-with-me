@@ -347,7 +347,7 @@ public class EventServiceImpl implements EventService {
             for (LinkedHashMap linkedHashMap : listFromObject) {
                 String[] split = linkedHashMap.get("uri").toString().split(",");
                 for (EventShortDto event : eventList) {
-                    if (event.getId().equals(split[2])) {
+                    if (event.getId().equals(Long.parseLong(split[2]))) {
                         Long views = Long.parseLong(String.valueOf(linkedHashMap.get("hits")));
                         event.setViews(views);
                         log.info("For event id " + event.getId() + " has set views = " + event.getViews());

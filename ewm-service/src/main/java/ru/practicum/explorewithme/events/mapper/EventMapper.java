@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 @Data
 public class EventMapper {
 
-    public static DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    public static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     public static List<EventShortDto> toEventShortDtoCollection(Collection<Event> eventCollection) {
         return eventCollection.stream()
