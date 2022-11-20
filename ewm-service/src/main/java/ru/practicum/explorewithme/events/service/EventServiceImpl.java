@@ -103,6 +103,7 @@ public class EventServiceImpl implements EventService {
         }
         return event;
     }
+
     @Override
     public Event updateEvent(Long userId, UpdateEventRequest updateEventRequest) {
         Long eventId = updateEventRequest.getEventId();

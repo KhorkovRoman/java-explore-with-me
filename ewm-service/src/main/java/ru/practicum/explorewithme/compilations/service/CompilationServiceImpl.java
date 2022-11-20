@@ -50,7 +50,7 @@ public class CompilationServiceImpl implements CompilationService {
     @Override
     public void addEventToCompilation(Long compId, Long eventId) {
         Compilation compilation = compilationRepository.findById(compId)
-                .orElseThrow(() -> new NotFoundException( "In DB has not found compilation with id " + compId));
+                .orElseThrow(() -> new NotFoundException("In DB has not found compilation with id " + compId));
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException("In DB has not found event with id " + eventId));
         Collection<Event> events = compilation.getEvents();

@@ -26,8 +26,8 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     @Query("select e " +
             "from Event e " +
             "where e.initiator in ?1 " +
-            "and e.state in ?2 "+
-            "and e.category in ?3 "+
+            "and e.state in ?2 " +
+            "and e.category in ?3 " +
             "and e.eventDate between ?4 and ?5 " +
             "group by e.id " +
             "order by e.eventDate desc")
@@ -39,8 +39,8 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             "from Event e " +
             "where upper(e.annotation) like upper(concat('%',?1,'%')) " +
             "or upper(e.description) like upper(concat('%',?1,'%')) " +
-            "and e.category in ?2 "+
-            "and e.paid = ?3 "+
+            "and e.category in ?2 " +
+            "and e.paid = ?3 " +
             "and e.eventDate between ?4 and ?5 " +
             "and (e.participantLimit - e.confirmedRequests) > 0 " +
             "and e.state = ?6 " +
@@ -54,8 +54,8 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             "from Event e " +
             "where upper(e.annotation) like upper(concat('%',?1,'%')) " +
             "or upper(e.description) like upper(concat('%',?1,'%')) " +
-            "and e.category in ?2 "+
-            "and e.paid = ?3 "+
+            "and e.category in ?2 " +
+            "and e.paid = ?3 " +
             "and e.eventDate between ?4 and ?5 " +
             "and (e.participantLimit - e.confirmedRequests) > 0 " +
             "and e.state = ?6 " +
@@ -67,8 +67,8 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 
     @Query("select e " +
             "from Event e " +
-            "where e.category in ?2 "+
-            "and e.paid = ?3 "+
+            "where e.category in ?2 " +
+            "and e.paid = ?3 " +
             "and e.eventDate between ?4 and ?5 " +
             "and (e.participantLimit - e.confirmedRequests) > 0 " +
             "and e.state = ?6 " +
@@ -80,8 +80,8 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 
     @Query("select e " +
             "from Event e " +
-            "where e.category in ?2 "+
-            "and e.paid = ?3 "+
+            "where e.category in ?2 " +
+            "and e.paid = ?3 " +
             "and e.eventDate between ?4 and ?5 " +
             "and (e.participantLimit - e.confirmedRequests) > 0 " +
             "and e.state = ?6 " +
@@ -95,8 +95,8 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             "from Event e " +
             "where upper(e.annotation) like upper(concat('%',?1,'%')) " +
             "or upper(e.description) like upper(concat('%',?1,'%')) " +
-            "and e.category in ?2 "+
-            "and e.paid = ?3 "+
+            "and e.category in ?2 " +
+            "and e.paid = ?3 " +
             "and e.eventDate between ?4 and ?5 " +
             "group by e.id " +
             "order by e.eventDate desc")
@@ -108,8 +108,8 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             "from Event e " +
             "where upper(e.annotation) like upper(concat('%',?1,'%')) " +
             "or upper(e.description) like upper(concat('%',?1,'%')) " +
-            "and e.category in ?2 "+
-            "and e.paid = ?3 "+
+            "and e.category in ?2 " +
+            "and e.paid = ?3 " +
             "and e.eventDate between ?4 and ?5 " +
             "group by e.id " +
             "order by e.views desc")
@@ -119,8 +119,8 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 
     @Query("select e " +
             "from Event e " +
-            "where e.category in ?2 "+
-            "and e.paid = ?3 "+
+            "where e.category in ?2 " +
+            "and e.paid = ?3 " +
             "and e.eventDate between ?4 and ?5 " +
             "group by e.id " +
             "order by e.eventDate desc")
@@ -130,8 +130,8 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 
     @Query("select e " +
             "from Event e " +
-            "where e.category in ?2 "+
-            "and e.paid = ?3 "+
+            "where e.category in ?2 " +
+            "and e.paid = ?3 " +
             "and e.eventDate between ?4 and ?5 " +
             "group by e.id " +
             "order by e.views desc")
