@@ -40,7 +40,7 @@ public class StatsServerServiceImpl implements StatsServerService {
         LocalDateTime endFormatted = LocalDateTime.parse(end, FORMATTER);
 
         List<Object[]> endpointHits = new ArrayList<>();
-        if(unique.equals(true)) {
+        if (unique.equals(true)) {
             endpointHits = statsServerRepository.getEndpointHitsUnique(startFormatted, endFormatted, uris);
         } else {
             endpointHits = statsServerRepository.getEndpointHitsNotUnique(startFormatted, endFormatted, uris);
