@@ -16,6 +16,8 @@ import ru.practicum.explorewithme.events.mapper.EventMapper;
 import ru.practicum.explorewithme.events.model.Event;
 import ru.practicum.explorewithme.events.model.EventStatus;
 import ru.practicum.explorewithme.events.repository.EventRepository;
+import ru.practicum.explorewithme.requests.model.RequestStatus;
+import ru.practicum.explorewithme.requests.repository.RequestRepository;
 import ru.practicum.explorewithme.users.model.User;
 import ru.practicum.explorewithme.users.repository.UserRepository;
 
@@ -40,14 +42,18 @@ public class EventServiceImpl implements EventService {
     private final EventRepository eventRepository;
     private final CategoryRepository categoryRepository;
     private final UserRepository userRepository;
+
+    private final RequestRepository requestRepository;
     private final EventClient eventClient;
 
     @Autowired
     public EventServiceImpl(EventRepository eventRepository, CategoryRepository categoryRepository,
-                            UserRepository userRepository, EventClient eventClient) {
+                            UserRepository userRepository, RequestRepository requestRepository,
+                            EventClient eventClient) {
         this.eventRepository = eventRepository;
         this.categoryRepository = categoryRepository;
         this.userRepository = userRepository;
+        this.requestRepository = requestRepository;
         this.eventClient = eventClient;
     }
 
@@ -264,7 +270,7 @@ public class EventServiceImpl implements EventService {
         }
         LocalDateTime rangeEndFormatted;
         if (rangeEnd.equals("")) {
-            rangeEndFormatted = LocalDateTime.now();
+            rangeEndFormatted = LocalDateTime.now().plusYears(50);
         } else {
             rangeEndFormatted = LocalDateTime.parse(rangeEnd, FORMATTER);
         }
@@ -361,6 +367,11 @@ public class EventServiceImpl implements EventService {
             }
         }
 
+        for (EventShortDto event : eventList) {
+            event.setConfirmedRequests(confirmedRequests(event.getId()));
+            log.info("For event id " + event.getId() + " has set confirmed requests = " + event.getConfirmedRequests());
+        }
+
         eventClient.createEndpointHit(makeEndpointHitEwmDto(request));
 
         return eventList;
@@ -379,21 +390,30 @@ public class EventServiceImpl implements EventService {
                 .orElseThrow(() -> new NotFoundException("Has not found event id " + id));
 
         String uris = request.getRequestURI();
-
         ArrayList<LinkedHashMap> listFromObject = findViews(uris);
-
         LinkedHashMap linkedHashMap = listFromObject.get(0);
-
         Long views = Long.parseLong(String.valueOf(linkedHashMap.get("hits")));
         event.setViews(views);
         log.info("For event id " + event.getId() + " has set views = " + event.getViews());
 
+        event.setConfirmedRequests(confirmedRequests(event.getId()));
+        log.info("For event id " + event.getId() + " has set confirmed requests = " + event.getConfirmedRequests());
         return event;
+    }
+
+    private Long confirmedRequests(Long eventId) {
+        RequestStatus status = RequestStatus.CONFIRMED;
+        List<Object[]> counts = requestRepository.getConfirmedRequestsByEvent(eventId, status);
+        Long count = 0L;
+        if (!counts.isEmpty()) {
+            count = Long.parseLong(counts.get(0)[0].toString());
+        }
+        return count;
     }
 
     private ArrayList<LinkedHashMap> findViews(String uris) {
         String start = LocalDateTime.now().minusYears(50).format(FORMATTER);
-        String end = LocalDateTime.now().plusDays(1).format(FORMATTER);
+        String end = LocalDateTime.now().plusYears(50).format(FORMATTER);
         ResponseEntity<Object> responseEntities = eventClient.getEndpointHits(start, end, uris, false);
         ArrayList<LinkedHashMap> listFromObject = new ArrayList<>();
         if (responseEntities != null) {
