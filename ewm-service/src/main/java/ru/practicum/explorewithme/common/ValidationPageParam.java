@@ -1,6 +1,6 @@
 package ru.practicum.explorewithme.common;
 
-import ru.practicum.explorewithme.exeption.BadRequestException;
+import ru.practicum.explorewithme.exeptions.BadRequestException;
 
 public class ValidationPageParam {
 
