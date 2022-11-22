@@ -5,7 +5,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.practicum.explorewithme.common.Create;
-import ru.practicum.explorewithme.common.Update;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
