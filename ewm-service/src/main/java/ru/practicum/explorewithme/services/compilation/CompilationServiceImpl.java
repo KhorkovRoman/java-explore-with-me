@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import ru.practicum.explorewithme.dtos.compilation.CompilationDto;
 import ru.practicum.explorewithme.exeptions.BadRequestException;
 import ru.practicum.explorewithme.exeptions.NotFoundException;
 import ru.practicum.explorewithme.dtos.compilation.NewCompilationDto;
