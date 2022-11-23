@@ -398,16 +398,8 @@ public class EventServiceImpl implements EventService {
 
         String uris = request.getRequestURI();
         ArrayList<LinkedHashMap<Object, Object>> listOfStats = findViews(uris);
-
-        log.info("listFromObject = " + listOfStats);
-
-        LinkedHashMap<Object, Object> linkedHashMap = listOfStats.get(0);
-
-        log.info("linkedHashMap = " + linkedHashMap);
-
-        Long views = Long.parseLong(String.valueOf(linkedHashMap.get("hits")));
-
-        log.info("views = " + views);
+        LinkedHashMap<Object, Object> mapFromStatsOfEventHits = listOfStats.get(0);
+        Long views = Long.parseLong(String.valueOf(mapFromStatsOfEventHits.get("hits")));
 
         event.setViews(views);
         log.info("For event id " + event.getId() + " has set views = " + event.getViews());
