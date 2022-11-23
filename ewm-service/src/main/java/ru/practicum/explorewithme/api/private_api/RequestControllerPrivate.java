@@ -1,4 +1,4 @@
-package ru.practicum.explorewithme.API.privateAPI;
+package ru.practicum.explorewithme.api.private_api;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

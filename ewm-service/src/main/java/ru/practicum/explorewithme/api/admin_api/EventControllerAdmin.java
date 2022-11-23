@@ -1,4 +1,4 @@
-package ru.practicum.explorewithme.API.adminAPI;
+package ru.practicum.explorewithme.api.admin_api;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

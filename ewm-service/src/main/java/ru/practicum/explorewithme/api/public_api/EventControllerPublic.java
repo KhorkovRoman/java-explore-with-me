@@ -1,4 +1,4 @@
-package ru.practicum.explorewithme.API.publicAPI;
+package ru.practicum.explorewithme.api.public_api;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;

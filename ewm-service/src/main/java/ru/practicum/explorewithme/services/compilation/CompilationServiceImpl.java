@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import ru.practicum.explorewithme.dtos.compilation.CompilationDto;
 import ru.practicum.explorewithme.exeptions.BadRequestException;
 import ru.practicum.explorewithme.exeptions.NotFoundException;
 import ru.practicum.explorewithme.dtos.compilation.NewCompilationDto;
@@ -38,20 +39,14 @@ public class CompilationServiceImpl implements CompilationService {
         if (newCompilationDto == null) {
             throw new IllegalArgumentException(OBJECT_EMPTY + "New Compilation.");
         }
-        Compilation compilation = compilationRepository.save(CompilationMapper.toCompilation(newCompilationDto));
+        Collection<Long> eventIds = newCompilationDto.getEvents();
+        Collection<Event> eventsFromDB = eventRepository.getEventsForCompilation(eventIds);
+        Compilation compilation = CompilationMapper.toCompilation(newCompilationDto);
+        compilation.setEvents(eventsFromDB);
         validateCompilation(compilation);
-        Collection<Long> eventsList = newCompilationDto.getEvents();
-        Collection<Event> events = new ArrayList<>();
-        for (Long eventId: eventsList) {
-            Event event = eventRepository.findById(eventId)
-                    .orElseThrow(() -> new NotFoundException(NOT_FOUND_EVENT + eventId));
-            events.add(event);
-        }
-        compilation.setEvents(events);
-        compilationRepository.save(compilation);
-
-        log.info("Compilation id " + compilation.getId() + " has successfully created.");
-        return compilation;
+        Compilation compilationDB = compilationRepository.save(compilation);
+        log.info("Compilation id " + compilationDB.getId() + " has successfully created.");
+        return compilationDB;
     }
 
     @Override

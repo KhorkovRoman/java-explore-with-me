@@ -240,19 +240,8 @@ public class EventServiceImpl implements EventService {
             rangeEndFormatted = LocalDateTime.parse(rangeEnd, FORMATTER);
         }
 
-        List<Category> categoryEntities = new ArrayList<>();
-        for (Long catId: categories) {
-            Category category = categoryRepository.findById(catId)
-                    .orElseThrow(() -> new NotFoundException(NOT_FOUND_CATEGORY + catId));
-            categoryEntities.add(category);
-        }
-
-        List<User> userEntities = new ArrayList<>();
-        for (Long userId: users) {
-            User user = userRepository.findById(userId)
-                    .orElseThrow(() -> new NotFoundException(NOT_FOUND_CATEGORY + userId));
-            userEntities.add(user);
-        }
+        List<Category> categoryEntities = categoryRepository.getCategoriesFromIds(categories);
+        List<User> userEntities = userRepository.getUsersFromIds(users);
 
         List<EventStatus> statesEnum = new ArrayList<>();
         if (states != null) {
@@ -290,12 +279,7 @@ public class EventServiceImpl implements EventService {
             rangeEndFormatted = LocalDateTime.parse(rangeEnd, FORMATTER);
         }
 
-        List<Category> categoryEntities = new ArrayList<>();
-        for (Long catId : categories) {
-            Category category = categoryRepository.findById(catId)
-                    .orElseThrow(() -> new NotFoundException(NOT_FOUND_CATEGORY + catId));
-            categoryEntities.add(category);
-        }
+        List<Category> categoryEntities = categoryRepository.getCategoriesFromIds(categories);
 
         Page<Event> events = null;
         if (text.isBlank()) {
@@ -364,17 +348,23 @@ public class EventServiceImpl implements EventService {
 
         String uris = urisBuilder.toString();
 
-        ArrayList<LinkedHashMap> listFromObject = findViews(uris);
+        ArrayList<LinkedHashMap<Object, Object>> listOfStats = findViews(uris);
+        if (!listOfStats.isEmpty()) {
+            Map<Long, Long> mapEventHits = new HashMap<>();
+            for (LinkedHashMap<Object, Object> mapFromStatsOfEventHits : listOfStats) {
+                String uriForSplit = String.valueOf(mapFromStatsOfEventHits.get("uri"));
+                String[] splitOfUri = uriForSplit.split("/");
+                Long eventId = Long.parseLong(splitOfUri[2]);
+                Long hits = Long.parseLong(String.valueOf(mapFromStatsOfEventHits.get("hits")));
 
-        if (!listFromObject.isEmpty()) {
-            for (LinkedHashMap linkedHashMap : listFromObject) {
-                String[] split = linkedHashMap.get("uri").toString().split(",");
-                for (EventShortDto event : eventList) {
-                    if (event.getId().equals(Long.parseLong(split[2]))) {
-                        Long views = Long.parseLong(String.valueOf(linkedHashMap.get("hits")));
-                        event.setViews(views);
-                        log.info("For event id " + event.getId() + " has set views = " + event.getViews());
-                    }
+                mapEventHits.put(eventId, hits);
+            }
+            for (EventShortDto event : eventList) {
+                Set keys = mapEventHits.keySet();
+                if (keys.contains(event.getId())) {
+                    Long views = mapEventHits.get(event.getId());
+                    event.setViews(views);
+                    log.info("For event id " + event.getId() + " has set views = " + event.getViews());
                 }
             }
         } else {
@@ -407,9 +397,18 @@ public class EventServiceImpl implements EventService {
                 .orElseThrow(() -> new NotFoundException(NOT_FOUND_EVENT + id));
 
         String uris = request.getRequestURI();
-        ArrayList<LinkedHashMap> listFromObject = findViews(uris);
-        LinkedHashMap linkedHashMap = listFromObject.get(0);
+        ArrayList<LinkedHashMap<Object, Object>> listOfStats = findViews(uris);
+
+        log.info("listFromObject = " + listOfStats);
+
+        LinkedHashMap<Object, Object> linkedHashMap = listOfStats.get(0);
+
+        log.info("linkedHashMap = " + linkedHashMap);
+
         Long views = Long.parseLong(String.valueOf(linkedHashMap.get("hits")));
+
+        log.info("views = " + views);
+
         event.setViews(views);
         log.info("For event id " + event.getId() + " has set views = " + event.getViews());
 
@@ -428,13 +427,13 @@ public class EventServiceImpl implements EventService {
         return count;
     }
 
-    private ArrayList<LinkedHashMap> findViews(String uris) {
+    private ArrayList<LinkedHashMap<Object, Object>> findViews(String uris) {
         String start = LocalDateTime.now().minusYears(50).format(FORMATTER);
         String end = LocalDateTime.now().plusYears(50).format(FORMATTER);
         ResponseEntity<Object> responseEntities = eventClient.getEndpointHits(start, end, uris, false);
-        ArrayList<LinkedHashMap> listFromObject = new ArrayList<>();
+        ArrayList<LinkedHashMap<Object, Object>> listFromObject = new ArrayList<>();
         if (responseEntities != null) {
-            listFromObject = (ArrayList<LinkedHashMap>) responseEntities.getBody();
+            listFromObject = (ArrayList<LinkedHashMap<Object, Object>>) responseEntities.getBody();
         }
         return listFromObject;
     }

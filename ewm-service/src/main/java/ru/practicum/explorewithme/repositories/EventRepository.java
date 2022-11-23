@@ -12,6 +12,7 @@ import ru.practicum.explorewithme.models.event.EventStatus;
 import ru.practicum.explorewithme.models.user.User;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 
 @Repository
@@ -22,6 +23,13 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             "group by e.id " +
             "order by e.id desc")
     Page<Event> getAllEventsByUser(Long userId, Pageable pageable);
+
+    @Query("select e " +
+            "from Event e " +
+            "where e.id in ?1 " +
+            "group by e.id " +
+            "order by e.eventDate desc")
+    Collection<Event> getEventsForCompilation(Collection<Long> eventIds);
 
     @Query("select e " +
             "from Event e " +
