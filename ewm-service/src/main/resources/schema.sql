@@ -73,6 +73,6 @@ CREATE TABLE IF NOT EXISTS comments (
     event_id       BIGINT NOT NULL,
     commentator_id BIGINT NOT NULL,
     created        TIMESTAMP WITHOUT TIME ZONE,
-    CONSTRAINT fk_requests_commentator_id FOREIGN KEY (commentator_id) REFERENCES users (user_id),
-    CONSTRAINT fk_requests_event_id FOREIGN KEY (event_id) REFERENCES events (event_id)
+    CONSTRAINT fk_comments_commentator_id FOREIGN KEY (commentator_id) REFERENCES users (user_id),
+    CONSTRAINT fk_comments_event_id FOREIGN KEY (event_id) REFERENCES events (event_id)
 );
