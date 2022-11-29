@@ -4,10 +4,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.jca.cci.CciOperationNotSupportedException;
 import org.springframework.stereotype.Service;
 import ru.practicum.explorewithme.dtos.comment.CommentDto;
 import ru.practicum.explorewithme.dtos.comment.NewCommentDto;
 import ru.practicum.explorewithme.dtos.comment.UpdateCommentDto;
+import ru.practicum.explorewithme.exeptions.BadRequestException;
+import ru.practicum.explorewithme.exeptions.ConflictException;
 import ru.practicum.explorewithme.exeptions.NotFoundException;
 import ru.practicum.explorewithme.mappers.CommentMapper;
 import ru.practicum.explorewithme.models.comment.Comment;
@@ -51,6 +54,7 @@ public class CommentServiceImpl implements CommentService {
             throw new IllegalArgumentException(OBJECT_EMPTY + "New Comment.");
         }
         Comment comment = CommentMapper.toComment(newCommentDto);
+        comment.setCreated(LocalDateTime.now());
         Event event = eventRepository.findById(newCommentDto.getEvent())
                 .orElseThrow(() -> new NotFoundException(NOT_FOUND_EVENT + newCommentDto.getEvent()));
         comment.setEvent(event);
@@ -64,13 +68,30 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public Comment updateComment(UpdateCommentDto updateCommentDto) {
+    public Comment updateCommentByAdmin(UpdateCommentDto updateCommentDto) {
         if (updateCommentDto == null) {
             throw new IllegalArgumentException(OBJECT_EMPTY + "Update Comment.");
         }
         Long commentId = updateCommentDto.getId();
-        Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new NotFoundException(NOT_FOUND_COMMENT + commentId));
+        Comment comment = getCommentById(commentId);
+        if (updateCommentDto.getComment() != null) {
+            comment.setComment(updateCommentDto.getComment());
+        }
+        Comment commentDB = commentRepository.save(comment);
+        log.info("Comment id " + commentDB.getId() + " has successfully updated by user.");
+        return commentDB;
+    }
+
+    @Override
+    public Comment updateCommentByUser(Long userId, UpdateCommentDto updateCommentDto) {
+        if (updateCommentDto == null) {
+            throw new IllegalArgumentException(OBJECT_EMPTY + "Update Comment.");
+        }
+        Comment comment = getCommentById(updateCommentDto.getId());
+        if (!comment.getCommentator().getId().equals(userId)) {
+            throw new BadRequestException("User id " + userId + " can't update comment by user id "
+                    + comment.getCommentator().getId());
+        }
         if (updateCommentDto.getComment() != null) {
             comment.setComment(updateCommentDto.getComment());
         }
@@ -89,7 +110,8 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public Collection<CommentDto> getCommentsByAdmin(List<Long> users, String rangeStart, String rangeEnd,
-                                                  PageRequest pageRequest) {
+                                                  Integer from, Integer size) {
+        final PageRequest pageRequest = findPageRequest(from, size);
         LocalDateTime rangeStartFormatted;
         if (rangeStart.isBlank()) {
             rangeStartFormatted = LocalDateTime.now();
@@ -104,14 +126,15 @@ public class CommentServiceImpl implements CommentService {
         }
         List<User> userEntities = userRepository.getUsersFromIds(users);
 
-        Page<Comment> comments = commentRepository.getAllCommentsByAdmin(userEntities, rangeStartFormatted, rangeEndFormatted,
-                                                                pageRequest);
+        Page<Comment> comments = commentRepository.getAllCommentsByAdmin(userEntities, rangeStartFormatted,
+                                                                            rangeEndFormatted, pageRequest);
 
         return CommentMapper.toCommentDtoCollection(comments.getContent());
     }
 
     @Override
-    public Collection<Comment> getCommentsByEvent(Long eventId, PageRequest pageRequest) {
+    public List<Comment> getAllCommentsByEvent(Long eventId, Integer from, Integer size) {
+        final PageRequest pageRequest = findPageRequest(from, size);
         eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException(NOT_FOUND_EVENT + eventId));
         return commentRepository.getAllCommentsByEvent(eventId, pageRequest).stream()
@@ -120,7 +143,8 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public Collection<CommentDto> getAllCommentsByUser(Long userId, String rangeStart, String rangeEnd,
-                                                 PageRequest pageRequest) {
+                                                       Integer from, Integer size) {
+        final PageRequest pageRequest = findPageRequest(from, size);
         LocalDateTime rangeStartFormatted;
         if (rangeStart.isBlank()) {
             rangeStartFormatted = LocalDateTime.now();
@@ -143,10 +167,25 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public void deleteComment(Long commId) {
-        commentRepository.findById(commId)
-                .orElseThrow(() -> new NotFoundException(NOT_FOUND_COMMENT + commId));
-        log.info("Comment id " + commId + " has deleted from DB.");
+    public void deleteCommentByAdmin(Long commId) {
+        getCommentById(commId);
         commentRepository.deleteById(commId);
+        log.info("Comment id " + commId + " has deleted from DB.");
+    }
+
+    @Override
+    public void deleteCommentByUser(Long userId, Long commId) {
+        Comment comment = getCommentById(commId);
+        if (!comment.getCommentator().getId().equals(userId)) {
+            throw new BadRequestException("User id " + userId + " can't delete comment by user id "
+                    + comment.getCommentator().getId());
+        }
+        commentRepository.deleteById(commId);
+        log.info("Comment id " + commId + " has deleted from DB.");
+    }
+
+    public PageRequest findPageRequest(Integer from, Integer size) {
+        int page = from / size;
+        return PageRequest.of(page, size);
     }
 }

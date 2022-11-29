@@ -5,6 +5,7 @@ import ru.practicum.explorewithme.dtos.comment.CommentDto;
 import ru.practicum.explorewithme.dtos.comment.NewCommentDto;
 import ru.practicum.explorewithme.models.comment.Comment;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
@@ -19,6 +20,7 @@ public class CommentMapper {
 
     public static CommentDto toCommentDto(Comment comment) {
         return CommentDto.builder()
+                .id(comment.getId())
                 .comment(comment.getComment())
                 .event(comment.getEvent().getId())
                 .commentator(comment.getCommentator().getId())
@@ -29,7 +31,6 @@ public class CommentMapper {
     public static Comment toComment(NewCommentDto newCommentDto) {
         return Comment.builder()
                 .comment(newCommentDto.getComment())
-                .created(newCommentDto.getCreated())
                 .build();
     }
 }

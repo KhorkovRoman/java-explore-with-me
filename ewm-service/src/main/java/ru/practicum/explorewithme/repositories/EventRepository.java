@@ -51,7 +51,6 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             "and e.paid = ?3 " +
             "and e.eventDate between ?4 and ?5 " +
             "and (e.participantLimit - e.confirmedRequests) > 0 " +
-            "and e.state = ?6 " +
             "group by e.id " +
             "order by e.eventDate desc")
     Page<Event> getAllEventsPublicByEventDateAvailable(String text, List<Category> categoryEntities, Boolean paid,
@@ -66,7 +65,6 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             "and e.paid = ?3 " +
             "and e.eventDate between ?4 and ?5 " +
             "and (e.participantLimit - e.confirmedRequests) > 0 " +
-            "and e.state = ?6 " +
             "group by e.id " +
             "order by e.views desc")
     Page<Event> getAllEventsPublicByViewsAvailable(String text, List<Category> categoryEntities, Boolean paid,
@@ -75,27 +73,25 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 
     @Query("select e " +
             "from Event e " +
-            "where e.category in ?2 " +
-            "and e.paid = ?3 " +
-            "and e.eventDate between ?4 and ?5 " +
+            "where e.category in ?1 " +
+            "and e.paid = ?2 " +
+            "and e.eventDate between ?3 and ?4 " +
             "and (e.participantLimit - e.confirmedRequests) > 0 " +
-            "and e.state = ?6 " +
             "group by e.id " +
             "order by e.eventDate desc")
-    Page<Event> getAllEventsPublicByEventDateAvailableAllText(String text, List<Category> categoryEntities, Boolean paid,
+    Page<Event> getAllEventsPublicByEventDateAvailableAllText(List<Category> categoryEntities, Boolean paid,
                                                               LocalDateTime rangeStart, LocalDateTime rangeEnd,
                                                               PageRequest pageRequest);
 
     @Query("select e " +
             "from Event e " +
-            "where e.category in ?2 " +
-            "and e.paid = ?3 " +
-            "and e.eventDate between ?4 and ?5 " +
+            "where e.category in ?1 " +
+            "and e.paid = ?2 " +
+            "and e.eventDate between ?3 and ?4 " +
             "and (e.participantLimit - e.confirmedRequests) > 0 " +
-            "and e.state = ?6 " +
             "group by e.id " +
             "order by e.views desc")
-    Page<Event> getAllEventsPublicByViewsAvailableAllText(String text, List<Category> categoryEntities, Boolean paid,
+    Page<Event> getAllEventsPublicByViewsAvailableAllText(List<Category> categoryEntities, Boolean paid,
                                                           LocalDateTime rangeStart, LocalDateTime rangeEnd,
                                                           PageRequest pageRequest);
 
@@ -127,23 +123,23 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 
     @Query("select e " +
             "from Event e " +
-            "where e.category in ?2 " +
-            "and e.paid = ?3 " +
-            "and e.eventDate between ?4 and ?5 " +
+            "where e.category in ?1 " +
+            "and e.paid = ?2 " +
+            "and e.eventDate between ?3 and ?4 " +
             "group by e.id " +
             "order by e.eventDate desc")
-    Page<Event> getAllEventsPublicByEventDateAllText(String text, List<Category> categoryEntities, Boolean paid,
+    Page<Event> getAllEventsPublicByEventDateAllText(List<Category> categoryEntities, Boolean paid,
                                                      LocalDateTime rangeStart, LocalDateTime rangeEnd,
                                                      PageRequest pageRequest);
 
     @Query("select e " +
             "from Event e " +
-            "where e.category in ?2 " +
-            "and e.paid = ?3 " +
-            "and e.eventDate between ?4 and ?5 " +
+            "where e.category in ?1 " +
+            "and e.paid = ?2 " +
+            "and e.eventDate between ?3 and ?4 " +
             "group by e.id " +
             "order by e.views desc")
-    Page<Event> getAllEventsPublicByViewsAllText(String text, List<Category> categoryEntities, Boolean paid,
+    Page<Event> getAllEventsPublicByViewsAllText(List<Category> categoryEntities, Boolean paid,
                                                  LocalDateTime rangeStart, LocalDateTime rangeEnd,
                                                  PageRequest pageRequest);
 }

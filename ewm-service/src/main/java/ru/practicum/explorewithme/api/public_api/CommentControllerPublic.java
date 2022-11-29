@@ -37,13 +37,7 @@ public class CommentControllerPublic {
         validatePage(from, size);
         log.info("Has received request to endpoint GET/events/{}/comments?from={}size={}",
                 eventId, from, size);
-        final PageRequest pageRequest = findPageRequest(from, size);
-        return CommentMapper.toCommentDtoCollection(commentService.getCommentsByEvent(eventId, pageRequest));
-    }
-
-    public PageRequest findPageRequest(Integer from, Integer size) {
-        int page = from / size;
-        return PageRequest.of(page, size);
+        return CommentMapper.toCommentDtoCollection(commentService.getAllCommentsByEvent(eventId, from, size));
     }
 
     private void validatePage(Integer from, Integer size) {

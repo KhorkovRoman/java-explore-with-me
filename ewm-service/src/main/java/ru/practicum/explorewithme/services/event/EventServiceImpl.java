@@ -279,17 +279,19 @@ public class EventServiceImpl implements EventService {
             rangeEndFormatted = LocalDateTime.parse(rangeEnd, FORMATTER);
         }
 
+        eventClient.createEndpointHit(makeEndpointHitEwmDto(request));
+
         List<Category> categoryEntities = categoryRepository.getCategoriesFromIds(categories);
 
         Page<Event> events = null;
         if (text.isBlank()) {
             if (onlyAvailable.equals(true)) {
                 if (EVENT_DATE.equals(sort) || sort.isBlank()) {
-                    events = eventRepository.getAllEventsPublicByEventDateAvailableAllText(text, categoryEntities, paid,
+                    events = eventRepository.getAllEventsPublicByEventDateAvailableAllText(categoryEntities, paid,
                             rangeStartFormatted, rangeEndFormatted, pageRequest);
                 }
                 if (VIEWS.equals(sort)) {
-                    events = eventRepository.getAllEventsPublicByViewsAvailableAllText(text, categoryEntities, paid,
+                    events = eventRepository.getAllEventsPublicByViewsAvailableAllText(categoryEntities, paid,
                             rangeStartFormatted, rangeEndFormatted, pageRequest);
                 }
             }
@@ -308,11 +310,11 @@ public class EventServiceImpl implements EventService {
 
         if (text.isBlank()) {
             if (EVENT_DATE.equals(sort) || sort.isBlank()) {
-                events = eventRepository.getAllEventsPublicByEventDateAllText(text, categoryEntities, paid,
+                events = eventRepository.getAllEventsPublicByEventDateAllText(categoryEntities, paid,
                         rangeStartFormatted, rangeEndFormatted, pageRequest);
             }
             if (VIEWS.equals(sort)) {
-                events = eventRepository.getAllEventsPublicByViewsAllText(text, categoryEntities, paid,
+                events = eventRepository.getAllEventsPublicByViewsAllText(categoryEntities, paid,
                         rangeStartFormatted, rangeEndFormatted, pageRequest);
             }
         } else {
@@ -379,7 +381,7 @@ public class EventServiceImpl implements EventService {
             log.info("For event id " + event.getId() + " has set confirmed requests = " + event.getConfirmedRequests());
         }
 
-        eventClient.createEndpointHit(makeEndpointHitEwmDto(request));
+
 
         return eventList;
     }

@@ -33,10 +33,10 @@ public class CommentControllerPrivate {
     }
 
     @PatchMapping("/{userId}/comments")
-    public CommentDto updateComment(@PathVariable Long userId,
+    public CommentDto updateCommentByUser(@PathVariable Long userId,
                                   @RequestBody UpdateCommentDto updateCommentDto) {
         log.info("Has received request to endpoint PATCH/users/{}/comments", userId);
-        return CommentMapper.toCommentDto(commentService.updateComment(updateCommentDto));
+        return CommentMapper.toCommentDto(commentService.updateCommentByUser(userId, updateCommentDto));
     }
 
     @GetMapping("/{userId}/comments")
@@ -48,8 +48,7 @@ public class CommentControllerPrivate {
         validatePage(from, size);
         log.info("Has received request to endpoint GET/users/{}/comments?rangeStart={}rangeEnd={}from={}size={}",
                 userId, rangeStart, rangeEnd, from, size);
-        final PageRequest pageRequest = findPageRequest(from, size);
-        return commentService.getAllCommentsByUser(userId, rangeStart, rangeEnd, pageRequest);
+        return commentService.getAllCommentsByUser(userId, rangeStart, rangeEnd, from, size);
     }
 
     @GetMapping("/{userId}/comments/{commentId}")
@@ -63,12 +62,7 @@ public class CommentControllerPrivate {
     public void deleteCommentByUser(@PathVariable Long userId,
                                     @PathVariable Long commentId) {
         log.info("Has received request to endpoint DELETE/users/{}/comments/{}", userId, commentId);
-        commentService.deleteComment(commentId);
-    }
-
-    public PageRequest findPageRequest(Integer from, Integer size) {
-        int page = from / size;
-        return PageRequest.of(page, size);
+        commentService.deleteCommentByUser(userId, commentId);
     }
 
     private void validatePage(Integer from, Integer size) {

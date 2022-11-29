@@ -11,6 +11,8 @@ import ru.practicum.explorewithme.dtos.comment.UpdateCommentDto;
 import ru.practicum.explorewithme.mappers.CommentMapper;
 import ru.practicum.explorewithme.services.comment.CommentService;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.util.Collection;
 import java.util.List;
 
@@ -31,12 +33,11 @@ public class CommentControllerAdmin {
                                                      @RequestParam(defaultValue = "") String rangeStart,
                                                      @RequestParam(defaultValue = "") String rangeEnd,
                                                      @RequestParam(defaultValue = "0") Integer from,
-                                                     @RequestParam(defaultValue = "10") Integer size) {
+                                                     @NotNull @RequestParam(defaultValue = "10") Integer size) {
         validatePage(from, size);
         log.info("Has received request to endpoint GET/admin/comments?users={}" +
                 "rangeStart{}rangeEnd{}from={}size={}", users, rangeStart, rangeEnd, from, size);
-        final PageRequest pageRequest = findPageRequest(from, size);
-        return commentService.getCommentsByAdmin(users, rangeStart, rangeEnd, pageRequest);
+        return commentService.getCommentsByAdmin(users, rangeStart, rangeEnd, from, size);
     }
 
     @GetMapping("/{commentId}")
@@ -46,21 +47,16 @@ public class CommentControllerAdmin {
     }
 
     @PutMapping("/{commentId}")
-    public CommentDto editCommentByAdmin(@PathVariable Long commentId,
+    public CommentDto updateCommentByAdmin(@PathVariable Long commentId,
                                          @RequestBody UpdateCommentDto updateCommentDto) {
         log.info("Has received request to endpoint PUT/admin/comments/{}", commentId);
-        return CommentMapper.toCommentDto(commentService.updateComment(updateCommentDto));
+        return CommentMapper.toCommentDto(commentService.updateCommentByAdmin(updateCommentDto));
     }
 
     @DeleteMapping("/{commentId}")
     public void deleteCommentByAdmin(@PathVariable Long commentId) {
         log.info("Has received request to endpoint DELETE/admin/comments/{}", commentId);
-        commentService.deleteComment(commentId);
-    }
-
-    public PageRequest findPageRequest(Integer from, Integer size) {
-        int page = from / size;
-        return PageRequest.of(page, size);
+        commentService.deleteCommentByAdmin(commentId);
     }
 
     private void validatePage(Integer from, Integer size) {

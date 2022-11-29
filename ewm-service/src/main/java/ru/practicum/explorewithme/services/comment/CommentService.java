@@ -13,21 +13,25 @@ public interface CommentService {
 
     Comment createComment(Long userId, NewCommentDto newCommentDto);
 
-    Comment updateComment(UpdateCommentDto updateCommentDto);
+    Comment updateCommentByAdmin(UpdateCommentDto updateCommentDto);
+
+    Comment updateCommentByUser(Long userId, UpdateCommentDto updateCommentDto);
 
     Comment getCommentById(Long commId);
 
     Collection<CommentDto> getCommentsByAdmin(List<Long> users,
                                               String rangeStart,
                                               String rangeEnd,
-                                              PageRequest pageRequest);
+                                              Integer from, Integer size);
 
-    Collection<Comment> getCommentsByEvent(Long eventId, PageRequest pageRequest);
+    Collection<Comment> getAllCommentsByEvent(Long eventId, Integer from, Integer size);
 
     Collection<CommentDto> getAllCommentsByUser(Long userId,
                                           String rangeStart,
                                           String rangeEnd,
-                                          PageRequest pageRequest);
+                                                Integer from, Integer size);
 
-    void deleteComment(Long commId);
+    void deleteCommentByAdmin(Long commId);
+
+    void deleteCommentByUser(Long userId, Long commId);
 }
