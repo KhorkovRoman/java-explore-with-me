@@ -381,8 +381,6 @@ public class EventServiceImpl implements EventService {
             log.info("For event id " + event.getId() + " has set confirmed requests = " + event.getConfirmedRequests());
         }
 
-
-
         return eventList;
     }
 
