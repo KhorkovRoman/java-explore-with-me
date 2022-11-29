@@ -2,7 +2,6 @@ package ru.practicum.explorewithme.api.private_api;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.explorewithme.common.ValidationPageParam;
 import ru.practicum.explorewithme.dtos.comment.CommentDto;

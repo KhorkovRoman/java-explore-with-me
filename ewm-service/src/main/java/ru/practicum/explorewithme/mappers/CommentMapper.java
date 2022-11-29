@@ -5,7 +5,6 @@ import ru.practicum.explorewithme.dtos.comment.CommentDto;
 import ru.practicum.explorewithme.dtos.comment.NewCommentDto;
 import ru.practicum.explorewithme.models.comment.Comment;
 
-import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.stream.Collectors;
 

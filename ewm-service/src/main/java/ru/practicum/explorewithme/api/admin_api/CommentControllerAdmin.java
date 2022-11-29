@@ -3,7 +3,6 @@ package ru.practicum.explorewithme.api.admin_api;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.explorewithme.common.ValidationPageParam;
 import ru.practicum.explorewithme.dtos.comment.CommentDto;
@@ -11,7 +10,6 @@ import ru.practicum.explorewithme.dtos.comment.UpdateCommentDto;
 import ru.practicum.explorewithme.mappers.CommentMapper;
 import ru.practicum.explorewithme.services.comment.CommentService;
 
-import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.Collection;
 import java.util.List;

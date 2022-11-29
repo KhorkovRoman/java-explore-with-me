@@ -1,6 +1,5 @@
 package ru.practicum.explorewithme.services.comment;
 
-import org.springframework.data.domain.PageRequest;
 import ru.practicum.explorewithme.dtos.comment.CommentDto;
 import ru.practicum.explorewithme.dtos.comment.NewCommentDto;
 import ru.practicum.explorewithme.dtos.comment.UpdateCommentDto;
