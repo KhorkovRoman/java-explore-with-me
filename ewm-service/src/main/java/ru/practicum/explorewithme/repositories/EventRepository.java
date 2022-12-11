@@ -51,7 +51,6 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             "and e.paid = ?3 " +
             "and e.eventDate between ?4 and ?5 " +
             "and (e.participantLimit - e.confirmedRequests) > 0 " +
-            "and e.state = ?6 " +
             "group by e.id " +
             "order by e.eventDate desc")
     Page<Event> getAllEventsPublicByEventDateAvailable(String text, List<Category> categoryEntities, Boolean paid,
@@ -66,7 +65,6 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             "and e.paid = ?3 " +
             "and e.eventDate between ?4 and ?5 " +
             "and (e.participantLimit - e.confirmedRequests) > 0 " +
-            "and e.state = ?6 " +
             "group by e.id " +
             "order by e.views desc")
     Page<Event> getAllEventsPublicByViewsAvailable(String text, List<Category> categoryEntities, Boolean paid,

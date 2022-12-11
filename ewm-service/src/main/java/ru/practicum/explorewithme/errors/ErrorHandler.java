@@ -29,6 +29,7 @@ public class ErrorHandler {
     public ApiError handleBadRequestException(BadRequestException ex) {
         log.info("BadRequestException: {}", ex.getMessage());
         return ApiError.builder()
+                .errors(List.of("Wrong data."))
                 .message(ex.getMessage())
                 .reason("Request contains wrong data.")
                 .status(StatusError.BAD_REQUEST.toString())

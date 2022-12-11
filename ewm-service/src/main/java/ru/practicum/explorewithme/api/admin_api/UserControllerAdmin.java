@@ -25,6 +25,12 @@ public class UserControllerAdmin {
         this.userService = userService;
     }
 
+    @PostMapping
+    public UserDto createUser(@RequestBody NewUserRequest newUserRequest) {
+        log.info("Has received request to endpoint POST/admin/users");
+        return UserMapper.toUserDto(userService.createUser(newUserRequest));
+    }
+
     @GetMapping
     public Collection<UserDto> getAllUsers(@RequestParam(required = false) List<Long> ids,
                                            @RequestParam(defaultValue = "0") Integer from,
@@ -39,12 +45,6 @@ public class UserControllerAdmin {
     public UserDto getUserById(@PathVariable Long userId) {
         log.info("Has received request to endpoint GET/admin/users/{}", userId);
         return UserMapper.toUserDto(userService.getUserById(userId));
-    }
-
-    @PostMapping
-    public UserDto createUser(@RequestBody NewUserRequest newUserRequest) {
-        log.info("Has received request to endpoint POST/admin/users");
-        return UserMapper.toUserDto(userService.createUser(newUserRequest));
     }
 
     @DeleteMapping("/{userId}")
